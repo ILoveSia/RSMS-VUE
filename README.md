@@ -1,15 +1,21 @@
 # RSMS_VUE 파일럿 프로젝트
 
-Vue.js + Node.js + PostgreSQL 기반 간단한 CRUD 파일럿 프로젝트
+Vue.js + Node.js + PostgreSQL 기반 계층형 아키텍처 CRUD 애플리케이션
 
 ## 📚 프로젝트 구조
 
 ```
 RSMS_VUE/
 ├── frontend/          # Vue.js 3 + Element Plus
-├── backend/           # Node.js + Express
-├── database/          # PostgreSQL Scripts
-└── README.md
+├── backend/           # Node.js + Express (계층형 아키텍처)
+│   ├── config/        # 설정 관리
+│   ├── routes/        # 라우트 정의
+│   ├── controllers/   # 요청/응답 처리
+│   ├── services/      # 비즈니스 로직
+│   ├── repositories/  # 데이터 접근 (Stored Procedure 호출)
+│   └── middleware/    # 미들웨어
+├── database/          # PostgreSQL Scripts & Stored Procedures
+└── docs/              # 프로젝트 문서
 ```
 
 ## 🎯 구현 기능
@@ -23,16 +29,24 @@ RSMS_VUE/
 - Vue 3 (Composition API)
 - Element Plus (UI 라이브러리)
 - Axios (HTTP 클라이언트)
+- Vue Router (라우팅)
+- Pinia (상태 관리)
 - Vite (빌드 도구)
 
 ### Backend
-- Node.js
-- Express
+- Node.js + Express
+- 계층형 아키텍처 (Layered Architecture)
+  - Routes → Controllers → Services → Repositories
 - node-postgres (PostgreSQL 클라이언트)
+- 환경변수 관리 (dotenv)
+- 에러 핸들링 미들웨어
 
 ### Database
-- PostgreSQL
+- PostgreSQL 14+
 - Schema: `rsms_vue`
+- Stored Procedures (plpgsql) - 19개
+  - 조직 관리: 9개
+  - 직책 관리: 10개
 
 ## 🚀 시작하기
 
@@ -47,6 +61,10 @@ psql -h 172.21.174.2 -U postgres -d postgres
 
 # 테이블 생성
 \i /home/rocosoo/RSMS_VUE/database/scripts/02.create_tables.sql
+
+# Stored Procedures 생성
+\i /home/rocosoo/RSMS_VUE/database/scripts/03.create_organization_procedures.sql
+\i /home/rocosoo/RSMS_VUE/database/scripts/04.create_position_procedures.sql
 ```
 
 ### 2. Backend 설정
@@ -97,18 +115,54 @@ Frontend 서버: http://localhost:5173
 - `PUT /api/positions/:positionId` - 직책 수정
 - `DELETE /api/positions/:positionId` - 직책 삭제
 
-## 📝 개발 노트
+## 🏗️ 아키텍처 특징
 
-- 파일럿 프로젝트로 **간단하게** 구현
-- 인증/권한은 추후 추가 예정
-- UI는 Element Plus 기본 스타일 사용
-- 에러 핸들링 최소화 (기본 수준)
+### Backend 계층형 아키텍처
+```
+Client (Vue.js)
+    ↓
+Routes (URL 매핑)
+    ↓
+Controllers (HTTP 처리)
+    ↓
+Services (비즈니스 로직)
+    ↓
+Repositories (데이터 접근)
+    ↓
+Stored Procedures
+    ↓
+Database (PostgreSQL)
+```
 
-## 🔧 다음 단계
+### 주요 특징
+- **관심사 분리**: 각 계층이 명확한 책임을 가짐
+- **테스트 용이성**: 각 계층을 독립적으로 테스트 가능
+- **유지보수성**: 변경 시 해당 계층만 수정
+- **재사용성**: Service와 Repository 재사용 가능
+- **성능**: Stored Procedure를 통한 DB 최적화
+- **보안**: SQL Injection 방지, 비즈니스 로직 DB 캡슐화
 
-- [ ] 로그인/인증 추가
+## 📖 문서
+
+- [프로젝트 구조 상세](PROJECT_STRUCTURE.md) - 전체 파일 구조 및 설명
+- [아키텍처 리팩토링 보고서](ARCHITECTURE_REFACTORING.md) - Backend 계층형 아키텍처 전환 과정
+- [Stored Procedures 가이드](STORED_PROCEDURES_GUIDE.md) - 19개 Stored Procedure 사용법
+- [설치 가이드](SETUP_GUIDE.md) - 상세 설치 및 실행 가이드
+
+## 🔧 다음 단계 (다음 주)
+
+### Module 2: Frontend 개선
+- [ ] 공통 컴포넌트 개발 (DataTable, FormDialog 등)
+- [ ] Pinia 상태 관리 구현
+- [ ] 로딩 상태 표시
+- [ ] 에러 처리 개선
+
+### Module 3: 추가 기능
+- [ ] 통계 관련 Stored Procedures
+- [ ] 트랜잭션 관리 Procedures
 - [ ] 페이지네이션 구현
 - [ ] 검색 기능 추가
-- [ ] 유효성 검증 강화
-- [ ] 에러 핸들링 개선
-- [ ] 로딩 상태 표시
+
+### Module 4: 인증 및 권한
+- [ ] 로그인/인증 추가
+- [ ] 권한 관리 구현
