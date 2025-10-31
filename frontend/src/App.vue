@@ -2,14 +2,14 @@
   <div id="app">
     <el-container>
       <el-header style="background-color: #409EFF; color: white;">
-        <h2>RSMS Vue 파일럿</h2>
+        <h2>RSMS Vue Test Page</h2>
       </el-header>
       <el-container>
         <el-aside width="200px" style="background-color: #f5f7fa;">
           <el-menu :default-active="$route.path" router>
-            <el-menu-item index="/organizations">
+            <!-- <el-menu-item index="/organizations">
               <span>조직관리</span>
-            </el-menu-item>
+            </el-menu-item> -->
             <el-menu-item index="/positions">
               <span>직책관리</span>
             </el-menu-item>
